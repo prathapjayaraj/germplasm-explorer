@@ -1,6 +1,6 @@
-# CropGerm Explorer
+# Germplasam Explorer
 
-Generate a searchable, offline germplasm explorer from an Excel workbook. No Python, Node.js, or server setup is required.
+Generate a searchable, offline germplasm explorer from an Excel workbook. No setup is required.
 
 ## Quick start
 
