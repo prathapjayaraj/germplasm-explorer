@@ -1,0 +1,5 @@
+*.pyc
+__pycache__/
+.DS_Store
+app/tests/generated_smoke.html
+app/tests/generator_preview.png
