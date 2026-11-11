@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="color-scheme" content="light">
-<title>Banana Germplasm Explorer</title>
+<title>Germplasm Descriptor</title>
 <style>
 :root{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:#172033;background:#f5f7fb}
 *{box-sizing:border-box}body{margin:0;padding:16px 18px 26px}.wrap{max-width:1520px;margin:auto}
@@ -67,6 +67,13 @@ input,button{font:inherit}.search{flex:1;min-width:190px;max-width:100%;padding:
 @media(max-width:560px){body{padding:11px 9px 20px}h1{font-size:20px}.tabs{gap:5px}.tab{font-size:12px;padding:9px 10px}.card{padding:11px}.modal-backdrop{padding:8px}.detail-row{grid-template-columns:1fr;gap:3px}.modal-head,.modal-body{padding:13px}}
 
 
+/* Compact reference selection: details remain in the on-demand modal only. */
+.selected-reference{display:flex;align-items:center;justify-content:space-between;gap:14px;background:#f7fafc;border:1px solid #dce6ef;border-radius:12px;padding:12px 14px;margin:9px 0 13px}
+.selected-reference-text{display:flex;flex-direction:column;gap:4px;min-width:0}
+.selected-reference-caption{font-size:10px;color:#718096;text-transform:uppercase;letter-spacing:.7px;font-weight:700}
+.selected-reference-text strong{font-size:14px;color:#1c3549;overflow-wrap:anywhere}
+.reference-view-icon{display:grid;place-items:center;flex:none;width:38px;height:38px;background:white;color:#176b88;border:1px solid #cbdde6;border-radius:9px;cursor:pointer}
+.reference-view-icon:hover{background:#e9f3f7}.reference-view-icon:focus-visible{outline:3px solid #9bd3e7;outline-offset:2px}
 /* Friendly, light, offline explorer theme (based on the supplied reference UI). */
 :root{color:#172033;background:#f4f7fb;--blue:#1d4ed8;--border:#e2e8f0;--muted:#64748b}
 body{padding:20px 22px 28px}.wrap{max-width:1550px}
@@ -131,6 +138,34 @@ header h1{font-size:27px}.sub{font-size:13px;max-width:790px}
 .dus-map-toggle{background:#f1f7ff;color:#1e4e88;border:1px solid #cbdcf5;border-radius:8px;cursor:pointer;padding:9px 11px;font-weight:650;font-size:12px;margin:8px 0 5px;width:100%;text-align:left;display:flex;justify-content:space-between;align-items:center;gap:10px}.dus-map-toggle:hover{background:#e5f0ff}.dus-map-toggle[aria-expanded="true"]{background:#e4efff;border-color:#9ebff1}
 .dus-map-table{margin:4px 0 10px;border:1px solid #dce7f5;border-radius:9px;overflow:hidden}.dus-map-line{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:10px;padding:10px 11px;background:#fff;border-bottom:1px solid #e7eef7;font-size:11px;line-height:1.55}.dus-map-line:last-child{border-bottom:none}.dus-map-line:nth-child(even){background:#f8fbff}.dus-map-left strong{display:block;color:#23416b}.dus-map-right{color:#1b547e}.dus-map-muted{color:#9a6700}.dus-map-line small{display:block;color:#72849a;margin-top:3px}.dus-map-intro{font-size:11px;color:#687e95;line-height:1.55;margin:8px 0}
 @media(max-width:580px){.dus-map-line{grid-template-columns:1fr;gap:4px}}
+.icon-btn{height:34px;width:36px;display:inline-flex;align-items:center;justify-content:center;background:#fff;border:1px solid #d5dde6;color:#37536b;border-radius:8px;cursor:pointer;padding:0}
+.icon-btn:hover{background:#edf4f9;border-color:#aac0d0}.icon-btn:focus-visible{outline:3px solid #93c5fd;outline-offset:2px}
+.result-actions{display:flex;gap:7px;justify-content:flex-end;align-items:center}
+.result{padding:12px}.result-top{margin-bottom:4px}.mapping-all{white-space:nowrap}
+.map-group{margin:0 0 17px;padding:14px;border:1px solid #e0e7ee;border-radius:10px}.map-group-name{font-weight:700;font-size:14px}
+.mapping-browser{max-width:810px}.mapping-browser .modal-body{overflow:auto;max-height:74vh}.mapping-browser .search{width:100%;margin-bottom:14px}
+.compact-result{padding:11px 14px}.compact-result .result-top{display:flex;align-items:center;gap:10px;justify-content:space-between}.compact-result .result-info{min-width:0;flex:1}.compact-result .result-title{margin-bottom:3px}.compact-result .inline-view{flex:none;margin-left:auto}.compact-result .result-meta{white-space:normal}
+
+/* Mappings are optional, crop-agnostic and display source-standard refs only when configured. */
+.hint-next{display:block;margin-top:3px;color:#64748b;font-weight:400}
+.dus-mapping-alert{margin-top:10px;display:flex;flex-direction:column;gap:4px;padding:10px 12px;border-radius:9px;font-size:12px;line-height:1.45;border:1px solid}
+.dus-mapping-alert.error{background:#fef2f2;border-color:#fecaca;color:#991b1b}
+.dus-mapping-alert.warning{background:#fffbeb;border-color:#fcd34d;color:#92400e}
+.dus-card-unmapped{border-color:#fca5a5!important;background:#fffafa!important}
+.dus-card-partial{border-color:#f8d49a!important}
+.mapping-filter-row{display:flex;gap:10px;align-items:center;margin-bottom:13px}
+.mapping-filter-row input{margin-bottom:0!important;flex:1;min-width:0}
+.mapping-filter-row select{width:168px;flex:none;margin-bottom:0!important;font-size:12px}
+.mapping-status{padding:4px 8px;border-radius:18px;font-size:11px;font-weight:700;margin-left:auto;white-space:nowrap}
+.mapping-status.mapped{background:#dcfce7;color:#166534}
+.mapping-status.partial{background:#fef3c7;color:#92400e}
+.mapping-status.unmapped{background:#fee2e2;color:#991b1b}
+.map-group-name{display:flex;align-items:center;gap:8px;justify-content:space-between}
+.map-group.mapping-unmapped{border-color:#fecaca;background:#fff7f7}
+.map-group.mapping-partial{border-color:#fcd34d;background:#fffcf3}
+.mapping-line-unmapped{background:#fff7f7!important}
+.mapping-line-unmapped .dus-map-muted,.map-unmapped{color:#991b1b}
+@media(max-width:580px){.mapping-filter-row{flex-direction:column;align-items:stretch}.mapping-filter-row select{width:100%}}
 </style>
 </head>
 <body>
@@ -138,7 +173,7 @@ header h1{font-size:27px}.sub{font-size:13px;max-width:790px}
 <div class="wrap">
   <header>
     <div class="topline">
-      <div><h1 id="appTitle">Banana Germplasm Explorer</h1><p class="sub" id="appSubtitle">Search and compare germplasm accessions.</p></div>
+      <div><h1 id="appTitle">Germplasm Descriptor</h1><p class="sub" id="appSubtitle">Browse morphological descriptors and accessions.</p></div>
       <span class="source-label" id="dataSource">Offline · Excel-powered</span>
     </div>
     <div class="statline" id="stats"></div>
@@ -152,7 +187,13 @@ header h1{font-size:27px}.sub{font-size:13px;max-width:790px}
     <main class="pane" id="filterPane"></main>
     <aside class="output" id="resultPane" aria-live="polite"></aside>
   </div>
-  <div class="footer" id="footerText">Offline explorer · Edit the Excel workbook and regenerate to update this file.</div>
+  <div class="footer" id="footerText"></div>
+</div>
+<div id="dusMappingBackdrop" class="modal-backdrop" hidden role="presentation">
+ <section class="modal mapping-browser" role="dialog" aria-modal="true" aria-labelledby="dusMappingTitle">
+  <div class="modal-head"><h2 id="dusMappingTitle">DUS mappings</h2><button class="btn small" type="button" data-action="close-dus-mappings" aria-label="Close mappings">✕</button></div>
+  <div class="modal-body"><div class="mapping-filter-row"><input class="search" type="search" id="dusMappingSearch" placeholder="Search DUS characteristics and states…" aria-label="Search mappings"><select id="dusMappingFilter" class="search" aria-label="Filter mapping status"><option value="all">All mappings</option><option value="mapped">Fully mapped</option><option value="partial">Partially mapped</option><option value="unmapped">Not mapped</option></select></div><div id="dusMappingBody"></div></div>
+ </section>
 </div>
 <div id="modalBackdrop" class="modal-backdrop" hidden role="presentation">
   <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
@@ -172,7 +213,7 @@ const byId=new Map(RECORDS.map(r=>[String(r[0]),r]));
 const byDus=new Map(DUS.map(d=>[d.id,d]));
 const picks=Object.create(null), dusPicks=Object.create(null);
 const pane=document.getElementById('filterPane'), results=document.getElementById('resultPane');
-const openDusMappings=new Set();
+let dusMappingTerm="";
 let mode=DATA.defaultMode||'accession', traitTerm='', dusTerm='', accessionTerm='', resultTerm='', referenceID='', comparisonID='', modalID='',accessionGenome='',accessionSubgroup='';
 let pageCount=DATA.pageSize||25, candidateLimit=35, closestShown=DATA.maxClosest, selectedPageSize=DATA.pageSize||25, selectedNearest=DATA.maxClosest||20;
 for(const [id,val] of [['uiPageSize',selectedPageSize],['uiNearest',selectedNearest]]){const el=document.getElementById(id);if(el){if(![...el.options].some(o=>Number(o.value)===val)){el.add(new Option(String(val),String(val)))}el.value=String(val)}}
@@ -196,8 +237,8 @@ function init(){
  document.getElementById('appTitle').textContent=DATA.title;
  document.getElementById('appSubtitle').textContent=DATA.subtitle;
  document.getElementById('stats').innerHTML=`<span class="stat"><b>${RECORDS.length}</b><span>Accession records</span></span><span class="stat"><b>${new Set(RECORDS.map(r=>r[3]).filter(Boolean)).size}</b><span>Genome groups</span></span><span class="stat"><b>${DESC.length}</b><span>Morphological descriptors</span></span><span class="stat"><b>${DUS.length||DESC.reduce((x,d)=>x+d.options.length,0)}</b><span>${DUS.length?'Mapped DUS characteristics':'Defined morphological states'}</span></span>`;
- document.getElementById('dataSource').textContent=DATA.source||'Offline · Excel-powered';
- document.getElementById('footerText').textContent=(DATA.footer||'')+' · One standalone offline HTML · Update Excel and regenerate';
+ document.getElementById('dataSource').textContent=DATA.source||'';
+ document.getElementById('footerText').textContent=DATA.footer||'';
  if(DUS.length)document.getElementById('dusTab').classList.remove('hidden');
  document.getElementById('nearestSetting').hidden=mode!=='accession';renderTabs();renderLeft();renderRight();
 }
@@ -224,18 +265,43 @@ function renderTraitCards(){
  document.getElementById('traitCount').textContent=`${chosen.length} condition${chosen.length===1?'':'s'} · ${countSelected(picks)} with values`;
  renderTraitSuggestions();
 }
+function germplasmRef(d){
+ return d?.ipgri?` (${esc(d.ipgri)})`:''; // Optional standard reference comes only from Excel.
+}
+function descriptorMappingStatus(d){
+ const desc=byCid.get(d.cid);
+ if(!desc)return 'unmapped';
+ const mapped=d.states.filter(s=>s.codes.length).length;
+ return mapped===0?'unmapped':mapped===d.states.length?'mapped':'partial';
+}
 function dusMappingHtml(d,active){
- if(!active)return d.cid?`<p class="note"><b>Equivalent NRCB descriptor:</b> ${esc(byCid.get(d.cid)?.name||d.cid)} (${esc(d.cid)}). Select a DUS state to inspect the mapping.</p>`:'<p class="note warning">No NRCB characteristic identified. Select a state to inspect its source notes.</p>';
- const state=d.states.find(s=>s.code===active),nrcb=byCid.get(d.cid);
- if(!state||!nrcb||!state.codes.length)return `<div class="dus-state"><b>Selected DUS state:</b> ${esc(state?.label||active)} [${esc(active)}]<div><b>NRCB descriptor:</b> ${esc(nrcb?.name||'Not identified')}${nrcb?' ('+esc(d.cid)+')':''}</div><div><b>NRCB equivalent value:</b> Not verified / not mapped</div><div>${esc(state?.notes||'Mapping requires expert review.')} </div><div>Not used for filtering until an approved NRCB code is configured.</div></div>`;
- return `<div class="dus-state"><b>NRCB equivalent</b>: ${esc(nrcb.name)} (${esc(d.cid)})<div>${state.codes.map(code=>esc(optionLabel(nrcb,code))+' ['+esc(code)+']').join(' / ')}</div>${state.notes?`<div>${esc(state.notes)}</div>`:''}</div>`;
+ const source=byCid.get(d.cid);
+ const descriptor=source?`${esc(source.name)}${germplasmRef(source)}`:'Not mapped';
+ if(!active){
+  return source?`<p class="note">Mapped Germplasm descriptor for DUS: <b>${descriptor}</b><span class="hint-next">Select the DUS state.</span></p>`
+    :`<div class="dus-mapping-alert error"><b>No germplasm descriptor mapping</b><span>Select a DUS state to review its mapping status.</span></div>`;
+ }
+ const state=d.states.find(s=>s.code===active);
+ if(!state||!source){
+  return `<div class="dus-mapping-alert error"><b>No germplasm descriptor mapping</b><span>This DUS characteristic cannot filter accessions.</span></div>`;
+ }
+ if(!state.codes.length){
+  return `<div class="dus-mapping-alert warning"><b>Mapped Germplasm descriptor for DUS: ${descriptor}</b><span>No mapping for selected DUS state. This selection cannot match accessions.</span></div>`;
+ }
+ return `<div class="dus-state"><b>Mapped Germplasm descriptor for DUS: ${descriptor}</b><div><b>Mapped state:</b> ${state.codes.map(code=>`${esc(optionLabel(source,code))} [${esc(code)}]`).join(' / ')}</div>${state.notes?`<div class="dus-state-notes">${esc(state.notes)}</div>`:''}</div>`;
 }
 function dusPreviewHtml(d){
- const nrcb=byCid.get(d.cid);return `<div class="dus-map-intro">${esc(nrcb?.name||'No NRCB descriptor configured')}${nrcb?' · '+esc(nrcb.ipgri||d.cid):''}. Preview only; viewing mappings does not select a filter.</div><div class="dus-map-table">${d.states.map(s=>{const values=s.codes.map(c=>`${esc(optionLabel(nrcb,c))} [${esc(c)}]`);return `<div class="dus-map-line"><div class="dus-map-left"><strong>${esc(s.label)}</strong><small>DUS state ${esc(s.code)}</small></div><div class="dus-map-right ${values.length?'':'dus-map-muted'}">${values.length?values.join(' · '):'No equivalent state configured'}${s.notes?`<small>${esc(s.notes)}</small>`:''}</div></div>`}).join('')}</div>`;
+ const source=byCid.get(d.cid), status=descriptorMappingStatus(d);
+ const descriptor=source?`${esc(source.name)}${germplasmRef(source)}`:'Not mapped';
+ return `<div class="dus-map-intro ${status==='unmapped'?'map-unmapped':''}">${source?`Mapped Germplasm descriptor for DUS: <b>${descriptor}</b>`:'No germplasm descriptor mapping'}</div><div class="dus-map-table">${d.states.map(st=>{
+  const valid=Boolean(source&&st.codes.length);
+  const values=valid?st.codes.map(c=>`${esc(optionLabel(source,c))} [${esc(c)}]`):[];
+  return `<div class="dus-map-line ${valid?'':'mapping-line-unmapped'}"><div class="dus-map-left"><strong>${esc(st.label)}</strong><small>DUS state ${esc(st.code)}</small></div><div class="dus-map-right ${valid?'':'dus-map-muted'}">${valid?values.join(' · '):'No mapping for this state'}${st.notes?`<small>${esc(st.notes)}</small>`:''}</div></div>`
+ }).join('')}</div>`;
 }
 function renderDusCards(){
- const list=DUS.filter(d=>[d.name,d.id,d.cid,d.notes,...d.states.map(x=>x.label)].some(v=>low(v).includes(low(dusTerm))));
- document.getElementById('dusGrid').innerHTML=list.length?list.map(d=>`<div class="card"><div class="card-top"><div><div class="name">${esc(d.name)}</div><div class="code">DUS ${esc(d.id)} ${d.cid?'· NRCB '+esc(d.cid):'· unmapped'}</div></div><span class="pill">${d.states.length} states</span></div><button type="button" class="dus-map-toggle" data-action="preview-dus-mapping" data-id="${esc(d.id)}" aria-expanded="${openDusMappings.has(d.id)}">${openDusMappings.has(d.id)?'Hide':'View'} DUS ↔ NRCB mappings <span>${openDusMappings.has(d.id)?'−':'＋'}</span></button>${openDusMappings.has(d.id)?dusPreviewHtml(d):''}${makePicker('dus',d.id,d.states,dusPicks[d.id]||'','Choose DUS state…')}${dusMappingHtml(d,dusPicks[d.id]||'')}${d.notes?`<p class="note">${esc(d.notes)}</p>`:''}</div>`).join(''):'<div class="empty">No DUS descriptor matches your search.</div>';
+ const list=DUS.filter(d=>[d.name,d.id,byCid.get(d.cid)?.ipgri||'',...d.states.map(x=>x.label)].some(v=>low(v).includes(low(dusTerm))));
+ document.getElementById('dusGrid').innerHTML=list.length?list.map(d=>`<div class="card ${descriptorMappingStatus(d)==='unmapped'?'dus-card-unmapped':descriptorMappingStatus(d)==='partial'?'dus-card-partial':''}"><div class="card-top"><div><div class="name">${esc(d.name)}</div></div><span class="pill">${d.states.length} states</span></div>${makePicker('dus',d.id,d.states,dusPicks[d.id]||'','Choose DUS state…')}${dusMappingHtml(d,dusPicks[d.id]||'')}</div>`).join(''):'<div class="empty">No DUS descriptor matches your search.</div>';
  document.getElementById('dusCount').textContent=`Showing ${list.length} of ${DUS.length} DUS characteristics · ${countSelected(dusPicks)} selected`;
  document.getElementById('dusChips').innerHTML=Object.keys(dusPicks).filter(k=>dusPicks[k]).map(id=>{const d=byDus.get(id),s=d.states.find(x=>x.code===dusPicks[id]);return `<button type="button" class="chip" data-action="remove-dus" data-id="${esc(id)}">${esc(d.name)}: ${esc(s?.label||dusPicks[id])} ✕</button>`}).join('');
 }
@@ -245,7 +311,7 @@ function renderLeft(){
   renderTraitCards();return;
  }
  if(mode==='dus'){
-  pane.innerHTML=`<div class="section-intro"><strong>DUS characteristics and NRCB equivalents</strong><span>Click “View DUS ↔ NRCB mappings” to inspect every state before selecting a DUS value. Selecting a value applies the filter.</span></div><div class="toolbar"><input class="search" id="dusSearch" type="search" placeholder="Search DUS characteristic or state…" value="${esc(dusTerm)}"><button type="button" class="btn" data-action="clear-dus">Clear all</button></div><div class="meta">Source: Claude-generated DUS analysis. Mappings require expert validation. Unverified states cannot be used to match accessions.</div><div class="meta" id="dusCount"></div><div class="selected-chips" id="dusChips"></div><div class="grid" id="dusGrid"></div>`;
+  pane.innerHTML=`<div class="section-intro"><strong>DUS characteristics and germplasm mappings</strong><span>Select characteristics and states to filter accessions.</span></div><div class="toolbar"><button type="button" class="btn small mapping-all" data-action="open-dus-mappings" title="View configured DUS mappings">DUS mappings ↗</button></div><div class="toolbar"><input class="search" id="dusSearch" type="search" placeholder="Search DUS characteristic or state…" value="${esc(dusTerm)}"><button type="button" class="btn" data-action="clear-dus">Clear all</button></div><div class="meta"></div><div class="meta" id="dusCount"></div><div class="selected-chips" id="dusChips"></div><div class="grid" id="dusGrid"></div>`;
   renderDusCards();return;
  }
  const genomes=[...new Set(RECORDS.map(r=>r[3]).filter(Boolean))].sort(collator.compare);
@@ -262,8 +328,7 @@ function renderCandidates(){
 function renderReferenceSummary(){
  const div=document.getElementById('referenceSummary');if(!div)return;
  const r=getRec(referenceID);if(!r){div.innerHTML='<div class="empty">No accession selected. Search by number or cultivar name and choose a record.</div>';return}
- const valid=DESC.filter((d,i)=>codeValid(byCid.get(d.cid),r[5][i]));
- div.innerHTML=`<div class="ref-panel"><div class="ref-title">${esc(r[2])} <span class="pill">Accession ${esc(r[1])}</span></div><p class="ref-desc">Genome ${esc(r[3]||'—')} · Subgroup ${esc(r[4]||'—')} · ${valid.length} of ${DESC.length} valid recorded states (${Math.round(valid.length*100/DESC.length)}%)</p><button type="button" class="btn primary small" data-action="detail" data-id="${esc(r[0])}">View all ${DESC.length} descriptors</button><div class="small-heading" style="color:#172033">Recorded characteristics</div><div class="reference-traits">${valid.slice(0,12).map(d=>`<div class="reference-trait"><strong>${esc(d.name)}</strong><span>${esc(traitDisplay(d,r[5][d.index]))}</span></div>`).join('')}</div><div class="tiny">Showing first 12 valid descriptor states. Use “View all” to inspect every descriptor.</div></div>`;
+ div.innerHTML=`<div class="selected-reference"><div class="selected-reference-text"><span class="selected-reference-caption">Selected accession</span><strong>${esc(r[2])}</strong></div><button class="reference-view-icon" type="button" data-action="detail" data-id="${esc(r[0])}" aria-label="View full details for ${esc(r[2])}" title="View accession details"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"/><circle cx="12" cy="12" r="2.5"/></svg></button></div>`;
 }
 function mappedDusPicks(){return Object.entries(dusPicks).filter(([id,code])=>{
  if(!code)return false;const d=byDus.get(id);return Boolean(d && d.cid && d.states.some(s=>s.code===code&&s.codes.length))
@@ -303,19 +368,29 @@ function renderRight(){
   if(comparisonID&&getRec(comparisonID)){renderComparison(r,getRec(comparisonID));return}
   const close=closestTo(r);
   results.innerHTML=`<div class="results-heading"><span class="results-eyebrow">ACCESSION SIMILARITY</span><h2>Nearest accessions</h2></div><p>Reference: ${esc(r[2])} · ${esc(r[1])}. Similarity is descriptive state agreement, not genomic or biological relatedness.</p><div class="count">${close.length} other records · showing ${Math.min(closestShown,close.length)} ordered by similarity</div><div id="resultList"></div>`;
-  document.getElementById('resultList').innerHTML=close.slice(0,closestShown).map(({record:x,similarity:s},i)=>`<div class="result"><div class="result-top"><div><div class="result-title">${esc(x[2])}</div><div class="result-meta">Accession ${esc(x[1])} · ${esc(x[3])}</div></div><span class="score">${s.score<0?'N/A':s.score.toFixed(1)+'%'}</span></div><div class="result-meta"><span class="result-tag good">${s.matched} matching</span><span class="result-tag warn">${s.different} different</span><span class="result-tag">${s.shared}/${DESC.length} compared</span><span class="result-tag">${s.notComparable} unknown</span></div><div class="result-actions"><button type="button" class="btn primary" data-action="compare" data-id="${esc(x[0])}">Compare descriptors</button><button type="button" class="btn" data-action="detail" data-id="${esc(x[0])}">Full details</button></div></div>`).join('')+(close.length>closestShown?`<button class=\"btn\" type=\"button\" data-action=\"more-closest\">Show more (${close.length-closestShown} remaining)</button>`:'');
+  document.getElementById('resultList').innerHTML=close.slice(0,closestShown).map(({record:x,similarity:s},i)=>`<div class="result"><div class="result-top"><div><div class="result-title">${esc(x[2])}</div><div class="result-meta">Accession ${esc(x[1])} · ${esc(x[3])}</div></div><span class="score">${s.score<0?'N/A':s.score.toFixed(1)+'%'}</span></div><div class="result-meta"><span class="result-tag good">${s.matched} matching</span><span class="result-tag warn">${s.different} different</span><span class="result-tag">${s.shared}/${DESC.length} compared</span><span class="result-tag">${s.notComparable} unknown</span></div><div class="result-actions"><button type="button" class="btn primary" data-action="compare" data-id="${esc(x[0])}">Compare descriptors</button><button type="button" class="icon-btn" data-action="detail" data-id="${esc(x[0])}" title="View accession" aria-label="View ${esc(x[2])}">${eyeIcon}</button></div></div>`).join('')+(close.length>closestShown?`<button class=\"btn\" type=\"button\" data-action=\"more-closest\">Show more (${close.length-closestShown} remaining)</button>`:'');
   return;
  }
  const filtered=sortRecords(resultsForMode()),sel=mode==='traits'?countSelected(picks):countSelected(dusPicks),mapped=mode==='dus'?mappedDusPicks().length:sel;
  const msg=mode==='dus'&&sel>mapped?`<div class="warning-inline">${sel-mapped} selected DUS state(s) have no valid germplasm mapping. No accession is reported as matching until you remove those selections or add equivalences to Excel.</div>`:'';
- results.innerHTML=`<div class="results-heading"><span class="results-eyebrow">${mode==='dus'?'DUS RESULTS':'MORPHOLOGICAL RESULTS'}</span><h2>${mode==='dus'?'DUS lookup results':'Matching accessions'}</h2></div><p>${sel?`${sel} selected characteristic${sel===1?'':'s'} · matched by ${mapped} mapped condition${mapped===1?'':'s'}`:'Choose descriptor states on the left. All accessions are listed until you apply filters.'} Matching uses AND between selected characteristics.</p>${msg}<div class="match-summary"><strong>${filtered.length}</strong><span>matching accessions <small>out of ${RECORDS.length} records</small></span></div><input class="search" id="resultSearch" type="search" placeholder="Narrow results by accession, cultivar or genome…" value="${esc(resultTerm)}"><div id="resultList"></div>`;
+ results.innerHTML=`<div class="results-heading"><span class="results-eyebrow">${mode==='dus'?'DUS RESULTS':'MORPHOLOGICAL RESULTS'}</span><h2>${mode==='dus'?'DUS lookup results':'Matching accessions'}</h2></div><p>${sel?`${sel} selected characteristic${sel===1?'':'s'} · matched by ${mapped} mapped condition${mapped===1?'':'s'}`:'Choose descriptor states on the left. All accessions are listed until you apply filters.'} Matching uses AND between selected characteristics.</p>${msg}<div class="match-summary"><strong>${filtered.length}</strong><span>matching accessions <small>out of ${RECORDS.length} records</small></span></div><input class="search" id="resultSearch" type="search" placeholder="${mode==='dus'?'Search by accession name, number, cultivar or genome…':'Search by accession name, number or genome…'}" value="${esc(resultTerm)}"><div id="resultList"></div>`;
  renderResultList(filtered);
 }
+const eyeIcon='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"/><circle cx="12" cy="12" r="2.5"/></svg>';
+const mapIcon='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6Z"/><path d="M9 3v15M15 6v15"/></svg>';
+function renderDusMappingBrowser(){
+ const query=low(dusMappingTerm).trim(), filter=document.getElementById('dusMappingFilter').value;
+ const matched=DUS.filter(d=>(filter==='all'||descriptorMappingStatus(d)===filter)&&[d.name,d.id,byCid.get(d.cid)?.name||'',...d.states.map(x=>x.label)].some(v=>low(v).includes(query)));
+ const names={mapped:'Fully mapped',partial:'Partially mapped',unmapped:'Not mapped'};
+ document.getElementById('dusMappingBody').innerHTML=matched.length?matched.map(d=>{const state=descriptorMappingStatus(d);return `<section class="map-group mapping-${state}"><div class="map-group-name">${esc(d.name)} <span class="mapping-status ${state}">${names[state]}</span></div>${dusPreviewHtml(d)}</section>`}).join(''):'<p class="dim">No mappings match this filter.</p>';
+}
+function openDusMappingBrowser(){dusMappingTerm='';document.getElementById('dusMappingSearch').value='';document.getElementById('dusMappingFilter').value='all';renderDusMappingBrowser();document.getElementById('dusMappingBackdrop').hidden=false;document.body.style.overflow='hidden';document.getElementById('dusMappingSearch').focus()}
+function closeDusMappingBrowser(){document.getElementById('dusMappingBackdrop').hidden=true;document.body.style.overflow=''}
 function renderResultList(precomputed){
  const base=precomputed || sortRecords(resultsForMode());
  const list=base.filter(r=>textMatches(r,low(resultTerm)));
  const container=document.getElementById('resultList');if(!container)return;
- container.innerHTML=list.length?list.slice(0,pageCount).map(r=>`<div class="result"><div class="result-top"><div><div class="result-title">${esc(r[2])}</div><div class="result-meta">Accession ${esc(r[1])} · ${esc(r[3]||'Unknown genome')} · ${esc(r[4]||'—')}</div></div><span class="pill">${validTraitCounts.get(r[0])} traits</span></div><div class="result-actions"><button class="btn primary" type="button" data-action="detail" data-id="${esc(r[0])}">View accession details</button>${mode==='dus'&&countSelected(dusPicks)?`<button class="btn" type="button" data-action="dus-compare" data-id="${esc(r[0])}">DUS mapping details</button>`:''}</div></div>`).join('')+(list.length>pageCount?`<button class="btn" type="button" data-action="more-results">Show more (${list.length-pageCount} remaining)</button>`:''):'<div class="dim">No matching accession found. Remove a filter or try another search.</div>';
+ container.innerHTML=list.length?list.slice(0,pageCount).map(r=>`<div class="result compact-result"><div class="result-top"><div class="result-info"><div class="result-title">${esc(r[2])}</div><div class="result-meta">Accession ${esc(r[1])} · ${esc(r[3]||'Unknown genome')} · ${esc(r[4]||'—')}</div></div><button class="icon-btn inline-view" type="button" data-action="detail" data-id="${esc(r[0])}" aria-label="View ${esc(r[2])}" title="View accession">${eyeIcon}</button></div></div>`).join('')+(list.length>pageCount?`<button class="btn" type="button" data-action="more-results">Show more (${list.length-pageCount} remaining)</button>`:''):'<div class="dim">No matching accession found. Remove a filter or try another search.</div>';
 }
 function comparisonRows(a,b){
  return DESC.map((raw,i)=>{
@@ -337,13 +412,13 @@ function updateComparisonRows(a,b){
 function openDusDetails(r){
  const selected=Object.entries(dusPicks).filter(([id,code])=>code).map(([id,code])=>{
   const d=byDus.get(id),state=d.states.find(s=>s.code===code),nrcb=byCid.get(d.cid);
-  if(!nrcb||!state.codes.length)return {d,state,status:'unmapped',text:'No NRCB state mapping configured'};
+  if(!nrcb||!state.codes.length)return {d,state,status:'unmapped',text:'No germplasm state mapping configured'};
   const recorded=r[5][nrcb.index],good=codeValid(nrcb,recorded);
   return {d,state,status:good?(state.codes.includes(recorded)?'match':'different'):'unknown',
     text:traitDisplay(nrcb,recorded),nrcb};
  });
  const badge=(type)=>type==='match'?'MATCH':type==='different'?'MISMATCH':type==='unmapped'?'UNMAPPED':'NO COMPARABLE DATA';
- results.innerHTML=`<button class="btn small" type="button" data-action="back-dus">← DUS results</button><h2 style="margin-top:13px">DUS mapping inspection</h2><p>${esc(r[2])} · accession ${esc(r[1])}. DUS and NRCB states are not assumed equivalent unless mapped in the workbook.</p><div class="toolbar"><button class="btn small" data-action="detail" data-id="${esc(r[0])}">Full accession details</button></div>${selected.map(x=>`<div class="diffrow ${x.status==='unmapped'?'unknown':x.status}"><div class="lbl">${esc(x.d.name)} · ${esc(x.d.id)}</div><div>${esc(x.state.label)} (${esc(x.state.code)})</div><div class="dim">Germplasm equivalent: ${esc(x.nrcb?.name||'Not mapped')} · ${esc(x.text)}</div><div class="status">${badge(x.status)}</div></div>`).join('')}`;
+ results.innerHTML=`<button class="btn small" type="button" data-action="back-dus">← DUS results</button><h2 style="margin-top:13px">DUS mapping inspection</h2><p>${esc(r[2])} · accession ${esc(r[1])}</p><div class="toolbar"><button class="btn small" data-action="detail" data-id="${esc(r[0])}">Full accession details</button></div>${selected.map(x=>`<div class="diffrow ${x.status==='unmapped'?'unknown':x.status}"><div class="lbl">${esc(x.d.name)} · ${esc(x.d.id)}</div><div>${esc(x.state.label)} (${esc(x.state.code)})</div><div class="dim">Germplasm equivalent: ${esc(x.nrcb?.name||'Not mapped')} · ${esc(x.text)}</div><div class="status">${badge(x.status)}</div></div>`).join('')}`;
 }
 function modalRows(){
  const r=getRec(modalID);if(!r)return;
@@ -390,7 +465,8 @@ document.addEventListener('click',e=>{
    if(mode==='traits')renderTraitCards();else renderDusCards();renderRight();
   }
   else if(act==='remove-trait'){delete picks[id];renderTraitCards();renderRight()}
-  else if(act==='preview-dus-mapping'){if(openDusMappings.has(id))openDusMappings.delete(id);else openDusMappings.add(id);renderDusCards()}
+  else if(act==='open-dus-mappings')openDusMappingBrowser();
+  else if(act==='close-dus-mappings')closeDusMappingBrowser();
   else if(act==='remove-dus'){delete dusPicks[id];renderDusCards();renderRight()}
   else if(act==='clear-traits'){Object.keys(picks).forEach(k=>delete picks[k]);renderTraitCards();renderRight()}
   else if(act==='clear-dus'){Object.keys(dusPicks).forEach(k=>delete dusPicks[k]);renderDusCards();renderRight()}
@@ -408,6 +484,7 @@ document.addEventListener('click',e=>{
  }
  if(!e.target.closest('.picker')&&!['add-trait','show-trait-add'].includes(e.target.closest('[data-action]')?.dataset.action))closePickers();
  if(e.target===document.getElementById('modalBackdrop'))closeModal();
+ if(e.target===document.getElementById('dusMappingBackdrop'))closeDusMappingBrowser();
 });
 const delayedDusSearch=debounce(()=>{if(mode==='dus')renderDusCards()},90);
 const delayedAccessionSearch=debounce(()=>{if(mode==='accession')renderCandidates()},90);
@@ -419,12 +496,14 @@ document.addEventListener('input',e=>{
  else if(el.id==='accessionSearch'){accessionTerm=el.value;candidateLimit=55;delayedAccessionSearch()}
  else if(el.id==='resultSearch'){resultTerm=el.value;pageCount=selectedPageSize;delayedResultSearch()}
  else if(el.id==='modalSearch')modalRows();
+ else if(el.id==='dusMappingSearch'){dusMappingTerm=el.value;renderDusMappingBrowser();}
  else if(el.classList.contains('option-search')){
   const q=low(el.value),panel=el.closest('.panel');
   panel.querySelectorAll('[data-search]').forEach(x=>x.classList.toggle('hidden',!x.dataset.search.includes(q)));
  }
 });
 document.addEventListener('change',e=>{
+ if(e.target.id==='dusMappingFilter'){renderDusMappingBrowser();return}
  if(e.target.id==='uiPageSize'){selectedPageSize=Number(e.target.value);pageCount=selectedPageSize;if(mode==='accession'){candidateLimit=selectedPageSize;renderCandidates()}else renderResultList();return}
  if(e.target.id==='uiNearest'){selectedNearest=Number(e.target.value);closestShown=selectedNearest;if(mode==='accession')renderRight();return}
  if(e.target.id==='accessionGenome'){accessionGenome=e.target.value;accessionSubgroup='';renderLeft();renderRight()}
@@ -434,7 +513,7 @@ document.addEventListener('change',e=>{
   updateComparisonRows(getRec(referenceID),getRec(comparisonID));
  }
 });
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(!document.getElementById('modalBackdrop').hidden)closeModal();else closePickers()}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(!document.getElementById('dusMappingBackdrop').hidden)closeDusMappingBrowser();else if(!document.getElementById('modalBackdrop').hidden)closeModal();else closePickers()}});
 init();
 </script>
 </body>
