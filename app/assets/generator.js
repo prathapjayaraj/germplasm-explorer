@@ -12,7 +12,15 @@
   function descendants(node, namespace, name) {return Array.from(node.getElementsByTagNameNS(namespace, name));}
   function children(node, namespace, name) {return Array.from(node.children || []).filter(x => x.namespaceURI===namespace && x.localName===name);}
   function colNumber(address) { const m=/^[A-Za-z]+/.exec(address); if(!m)return 0; return [...m[0].toUpperCase()].reduce((n,c)=>n*26+c.charCodeAt(0)-64,0)-1; }
-  function parseXml(str, path) {const doc=new DOMParser().parseFromString(str,'application/xml');if(doc.getElementsByTagName('parsererror').length)fail('Invalid Excel XML: '+path);return doc;}
+  function parseXml(str, path) {
+    // Some XLSX producers prepend a UTF-8 BOM to individual XML components.
+    // JSZip decodes it as U+FEFF; remove it before DOMParser, without changing Excel data.
+    const clean = str.replace(/^\uFEFF/, '');
+    const doc = new DOMParser().parseFromString(clean, 'application/xml');
+    const error = doc.getElementsByTagName('parsererror')[0];
+    if (error) fail('Invalid Excel XML: ' + path + ' (' + error.textContent.trim().slice(0, 300) + ')');
+    return doc;
+  }
   function getText(node,ns,name){const e=descendants(node,ns,name)[0];return e?e.textContent:'';}
   async function readWorkbook(file) {
     if (file.size > 40 * 1024 * 1024) fail('Workbook exceeds the 40 MB browser safety limit; split the dataset or use the command-line generator');
