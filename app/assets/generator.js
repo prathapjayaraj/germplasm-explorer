@@ -77,6 +77,19 @@
   function enabled(v){return !new Set(['no','n','0','false','off','disabled','hide']).has(val(v).toLowerCase());}
   function assemble(sheets){
     const warnings=[];
+    // Configuration is read before optional DUS ingestion. The older display
+    // and page-size settings are deliberately ignored in this version.
+    const config={};
+    for(const row of extractRows(sheets,'Configurations',['Setting','Value'])){
+      const key=norm(get(row,'Setting'));
+      if(key)config[key]=get(row,'Value');
+    }
+    const dusSetting=val(config.enabledusmapping).toLowerCase();
+    if(dusSetting&&!['yes','no'].includes(dusSetting))
+      fail('Configurations: Enable DUS Mapping must be Yes or No');
+    const enableDusMapping=dusSetting==='yes';
+    if(!enableDusMapping && sheets['DUS Equivalent']?.length)
+      warnings.push('DUS Equivalent sheet was detected but DUS is disabled. Set Enable DUS Mapping = Yes in Configurations to review mappings.');
     const masters=extractRows(sheets,'Master Data',['CID','IPGRI','Descriptor','Description','Code','State']);
     if(!masters.length)fail('Master Data has no descriptors or states');
     const allMaster=new Map(),seen=new Set(), closedGroups=new Set(), names=new Map(), externalIds=new Map();
@@ -144,7 +157,13 @@
     if(repeated.length)warnings.push(`${repeated.length} repeated accession number(s), kept as distinct records: ${repeated.slice(0,8).join(', ')}`);
     if(invalid.size){warnings.push(`${issues.length} observations have undefined Master Data codes; generator blocks export unless you explicitly allow excluding them`);
       Array.from(invalid).sort((a,b)=>b[1]-a[1]).slice(0,8).forEach(([k,n])=>warnings.push(`  ${k}: ${n} observation(s)`));}
-    const drows=extractRows(sheets,'DUS Equivalent',['DUS Descriptor','DUS Value','Germplasm Descriptor','Germplasm Value','DUS ID','DUS Code']);
+    // DUS Equivalent is optional when DUS is disabled. When enabled,
+    // retain the existing mapping checks and require a populated DUS sheet.
+    const drows=enableDusMapping
+      ? extractRows(sheets,'DUS Equivalent',['DUS Descriptor','DUS Value','Germplasm Descriptor','Germplasm Value','DUS ID','DUS Code'])
+      : [];
+    if(enableDusMapping&&!drows.length)
+      fail('DUS mapping is enabled, but DUS Equivalent has no mapping rows');
     const byName=new Map();descriptors.forEach(d=>{const k=d.name.toLowerCase();byName.set(k,[...(byName.get(k)||[]),d]);});
     const byDus=new Map(),states=new Map();
     for(const row of drows){
@@ -171,10 +190,20 @@
     }
     const dus=Array.from(byDus.values());
     if(dus.length&&!dus.some(d=>d.states.some(s=>s.codes.length)))warnings.push('DUS characteristics are visible, but no state-level mappings are approved; DUS filtering is disabled until verified codes are entered');
-    const config={};for(const row of extractRows(sheets,'Configurations',['Setting','Value','Description'])){const k=norm(get(row,'Setting'));if(k)config[k]=get(row,'Value');}
-    function posInt(k,def,cap){const v=Number(config[k]||def);if(!Number.isFinite(v))fail(`Configurations: ${k} must be a number`);return Math.max(1,Math.min(cap,Math.trunc(v)));}
-    const data={title:config.title||'Germplasm Descriptor',subtitle:config.subtitle||'',source:config.datasource||'Germplasm descriptors',footer:config.footernote||'',defaultMode:['traits','accession','dus'].includes(config.defaultmode)?config.defaultmode:'accession',maxClosest:posInt('maxclosestresults',20,200),pageSize:posInt('resultpagesize',25,100),descriptors,records,dus};
-    if(data.defaultMode==='dus'&&!dus.length)data.defaultMode='accession';
+    // Fixed initial view and defaults. Users can still change result counts
+    // in the generated Explorer UI during their session.
+    const data={
+      title:config.title||'Germplasm Descriptor',
+      subtitle:config.subtitle||'',
+      source:config.datasource||'Germplasm descriptors',
+      footer:config.footernote||'',
+      defaultMode:'traits',
+      maxClosest:20,
+      pageSize:25,
+      enableDusMapping,
+      descriptors,records,
+      dus:enableDusMapping?dus:[]
+    };
     return {data,warnings,issues,stats:{accessions:records.length,descriptors:descriptors.length,states:descriptors.reduce((n,d)=>n+d.options.length,0),dus:dus.length,mappedDusStates:dus.reduce((n,d)=>n+d.states.filter(s=>s.codes.length).length,0)}};
   }
   function produceHtml(template,data){
